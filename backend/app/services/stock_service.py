@@ -121,13 +121,6 @@ class StockService:
         except Exception as e:
             raise StockDataError(f"Error searching for company: {str(e)}")
 
-    def get_stock_data(self, ticker: str, days: int = 365) -> pd.DataFrame:
-        """Fetch stock data from Yahoo Finance"""
-        stock = yf.Ticker(ticker)
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=days)
-        return stock.history(start=start_date, end=end_date)
-    
     def get_company_info(self, ticker: str) -> CompanyInfo:
         """Get company information"""
         stock = yf.Ticker(ticker)
