@@ -13,7 +13,7 @@ from app.core.dependencies import get_stock_service
 router = APIRouter()
 
 @router.get(
-    "/stocks/{ticker}",
+    "/stock/{ticker}",
     response_model=StockAnalysis,
     responses={
         404: {"model": HTTPError},
@@ -44,7 +44,7 @@ async def get_stock_info(
         raise HTTPException(status_code=404, detail=str(e))
 
 @router.get(
-    "/stocks/{ticker}/analysis",
+    "/stock/{ticker}/analysis",
     response_model=AnalysisResult,
     responses={
         404: {"model": HTTPError},
@@ -75,7 +75,7 @@ async def analyze_stock(
         raise HTTPException(status_code=404, detail=str(e))
 
 @router.get(
-    "/stocks/search/{query}",
+    "/stock/search/{query}",
     response_model=StockSearchResponse,
     responses={
         404: {"model": HTTPError},
