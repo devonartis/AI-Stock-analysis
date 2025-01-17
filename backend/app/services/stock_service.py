@@ -158,7 +158,7 @@ class StockService:
         except Exception as e:
             raise StockDataError(f"Error fetching stock info: {str(e)}")
 
-    def analyze_stock(self, company_input: str, days: int = 365) -> AnalysisResult:
+    async def analyze_stock(self, company_input: str, days: int = 365) -> AnalysisResult:
         """
         Perform comprehensive stock analysis
         
