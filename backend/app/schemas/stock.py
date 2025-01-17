@@ -84,6 +84,10 @@ class StockAnalysis(BaseModel):
     )
     historical_prices: List[StockPrice]
     analysis_date: datetime = Field(default_factory=datetime.now, description="Analysis timestamp")
+    ticker: str = Field(..., description="Stock ticker symbol")
+    company_name: str = Field(..., description="Company name")
+    change_percent: float = Field(..., description="24-hour price change percentage")
+    volume: int = Field(..., description="Trading volume")
 
     class Config:
         """Pydantic config"""
@@ -119,22 +123,3 @@ class AnalysisResult(BaseModel):
 class StockSearchResponse(BaseModel):
     """Response model for stock search endpoint"""
     ticker: str = Field(..., description="Stock ticker symbol", example="AAPL")
-from pydantic import BaseModel
-
-class StockAnalysis(BaseModel):
-    """Basic stock information and analysis"""
-    ticker: str
-    company_name: str
-    current_price: float
-    change_percent: float
-    volume: int
-
-class AnalysisResult(BaseModel):
-    """Detailed technical analysis results"""
-    ticker: str
-    recommendation: str
-    indicators: dict
-
-class StockSearchResponse(BaseModel):
-    """Response model for stock search"""
-    ticker: str

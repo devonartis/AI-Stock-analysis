@@ -11,7 +11,7 @@ from aiohttp import ClientSession
 
 from ..schemas.service import StockServiceInput
 from ..utils.output import OutputManager
-from ..schemas.stock import StockAnalysis, AnalysisResult, CompanyInfo, StockPrice, TechnicalIndicators
+from ..schemas.stock import StockAnalysis, AnalysisResult, CompanyInfo, StockPrice, TechnicalIndicators, BollingerBands
 from ..utils.technical import calculate_technical_indicators
 
 logger = logging.getLogger(__name__)
@@ -227,15 +227,28 @@ class StockService:
             # Get company information
             company_info = self.get_company_info(ticker)
             
+            # Calculate price change percentage
+            current_price = stock_data['Close'].iloc[-1]
+            prev_price = stock_data['Close'].iloc[-2] if len(stock_data) > 1 else current_price
+            change_percent = ((current_price - prev_price) / prev_price) * 100
+
             # Create StockAnalysis object
             analysis = StockAnalysis(
                 company_info=company_info,
-                current_price=stock_data['Close'].iloc[-1],
+                current_price=current_price,
                 technical_indicators=TechnicalIndicators(
                     sma_20=technical_data['SMA_20'].iloc[-1],
                     sma_50=technical_data['SMA_50'].iloc[-1],
                     sma_200=technical_data['SMA_200'].iloc[-1],
-                    rsi=technical_data['RSI'].iloc[-1]
+                    rsi=technical_data['RSI'].iloc[-1],
+                    macd=technical_data['MACD'].iloc[-1],
+                    bollinger_bands=BollingerBands(
+                        upper=technical_data['BB_upper'].iloc[-1],
+                        middle=technical_data['BB_middle'].iloc[-1],
+                        lower=technical_data['BB_lower'].iloc[-1],
+                        bandwidth=technical_data['BB_bandwidth'].iloc[-1],
+                        percent_b=technical_data['BB_percent_b'].iloc[-1]
+                    )
                 ),
                 price_statistics={
                     'mean': float(stock_data['Close'].mean()),
@@ -254,7 +267,11 @@ class StockService:
                         volume=row['Volume']
                     )
                     for index, row in stock_data.iterrows()
-                ]
+                ],
+                ticker=ticker,
+                company_name=company_info.name,
+                change_percent=change_percent,
+                volume=int(stock_data['Volume'].iloc[-1])
             )
             
             # Save outputs
