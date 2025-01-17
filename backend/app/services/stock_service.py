@@ -292,17 +292,75 @@ class StockService:
         Raises:
             Exception: If analysis fails
         """
-        # Basic placeholder implementation
-        return AnalysisResult(
-            ticker=ticker,
-            recommendation="HOLD",
-            indicators={
-                "rsi": 50.0,
-                "sma_20": 150.0,
-                "sma_50": 145.0,
-                "macd": 0.5
-            }
-        )
+        try:
+            # Get historical data
+            stock_data = self.get_stock_data(ticker)
+            if stock_data.empty:
+                raise StockDataError(f"No data found for {ticker}")
+
+            # Calculate technical indicators
+            close_prices = stock_data['Close']
+            
+            # Calculate RSI
+            delta = close_prices.diff()
+            gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
+            loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
+            rs = gain / loss
+            rsi = 100 - (100 / (1 + rs))
+            
+            # Calculate Moving Averages
+            sma_20 = close_prices.rolling(window=20).mean()
+            sma_50 = close_prices.rolling(window=50).mean()
+            sma_200 = close_prices.rolling(window=200).mean()
+            
+            # Calculate MACD
+            exp1 = close_prices.ewm(span=12, adjust=False).mean()
+            exp2 = close_prices.ewm(span=26, adjust=False).mean()
+            macd = exp1 - exp2
+            signal = macd.ewm(span=9, adjust=False).mean()
+            
+            # Calculate Bollinger Bands
+            middle_band = sma_20
+            std_dev = close_prices.rolling(window=20).std()
+            upper_band = middle_band + (std_dev * 2)
+            lower_band = middle_band - (std_dev * 2)
+            
+            # Get latest values
+            current_price = close_prices.iloc[-1]
+            current_rsi = rsi.iloc[-1]
+            current_macd = macd.iloc[-1]
+            current_signal = signal.iloc[-1]
+            
+            # Generate recommendation
+            recommendation = "HOLD"
+            if current_rsi > 70:
+                recommendation = "SELL"
+            elif current_rsi < 30:
+                recommendation = "BUY"
+            elif current_price > upper_band.iloc[-1]:
+                recommendation = "SELL"
+            elif current_price < lower_band.iloc[-1]:
+                recommendation = "BUY"
+            
+            return AnalysisResult(
+                ticker=ticker,
+                recommendation=recommendation,
+                indicators={
+                    "rsi": float(current_rsi),
+                    "sma_20": float(sma_20.iloc[-1]),
+                    "sma_50": float(sma_50.iloc[-1]),
+                    "sma_200": float(sma_200.iloc[-1]),
+                    "macd": float(current_macd),
+                    "macd_signal": float(current_signal),
+                    "macd_histogram": float(current_macd - current_signal),
+                    "bollinger_upper": float(upper_band.iloc[-1]),
+                    "bollinger_middle": float(middle_band.iloc[-1]),
+                    "bollinger_lower": float(lower_band.iloc[-1])
+                }
+            )
+            
+        except Exception as e:
+            raise AnalysisError(f"Failed to analyze stock: {str(e)}")
 
     async def search_company(self, query: str) -> str:
         """
