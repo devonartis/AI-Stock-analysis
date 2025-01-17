@@ -41,6 +41,31 @@ class StockService:
         self.output_manager = OutputManager(output_dir or 'output')
         self.headers = {'User-Agent': 'Mozilla/5.0'}
         
+    def get_stock_data(self, ticker: str, days: int = 365) -> pd.DataFrame:
+        """
+        Fetch historical stock data from Yahoo Finance
+        
+        Args:
+            ticker: Stock ticker symbol
+            days: Number of days of historical data to fetch
+            
+        Returns:
+            pd.DataFrame: Historical stock data
+            
+        Raises:
+            StockDataError: If data fetch fails
+        """
+        try:
+            stock = yf.Ticker(ticker)
+            end_date = datetime.now()
+            start_date = end_date - timedelta(days=days)
+            data = stock.history(start=start_date, end=end_date)
+            if data.empty:
+                raise StockDataError(f"No data found for ticker {ticker}")
+            return data
+        except Exception as e:
+            raise StockDataError(f"Failed to fetch stock data: {str(e)}")
+        
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=4, max=10),
