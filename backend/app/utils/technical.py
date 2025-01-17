@@ -1,5 +1,6 @@
 import pandas as pd
-from typing import Dict, Any
+import numpy as np
+from typing import Dict, Any, Optional
 
 def calculate_rsi(data: pd.DataFrame, periods: int = 14) -> pd.Series:
     """Calculate Relative Strength Index"""
@@ -46,6 +47,83 @@ def calculate_bollinger_bands(data: pd.Series, window: int = 20, num_std: float 
         "lower": float(lower.iloc[-1]),
         "bandwidth": float(bandwidth.iloc[-1]),
         "percent_b": float(percent_b.iloc[-1])
+    }
+
+def calculate_volume_ema(volume: pd.Series, period: int = 20) -> float:
+    """Calculate Volume Exponential Moving Average"""
+    return float(volume.ewm(span=period, adjust=False).mean().iloc[-1])
+
+def calculate_on_balance_volume(data: pd.DataFrame) -> float:
+    """Calculate On Balance Volume"""
+    obv = (np.sign(data['Close'].diff()) * data['Volume']).cumsum()
+    return float(obv.iloc[-1])
+
+def calculate_mfi(data: pd.DataFrame, period: int = 14) -> float:
+    """Calculate Money Flow Index"""
+    typical_price = (data['High'] + data['Low'] + data['Close']) / 3
+    money_flow = typical_price * data['Volume']
+    positive_flow = money_flow.where(typical_price > typical_price.shift(1), 0).rolling(period).sum()
+    negative_flow = money_flow.where(typical_price < typical_price.shift(1), 0).rolling(period).sum()
+    money_ratio = positive_flow / negative_flow
+    return float(100 - (100 / (1 + money_ratio.iloc[-1])))
+
+def calculate_adx(data: pd.DataFrame, period: int = 14) -> float:
+    """Calculate Average Directional Index"""
+    tr1 = data['High'] - data['Low']
+    tr2 = abs(data['High'] - data['Close'].shift(1))
+    tr3 = abs(data['Low'] - data['Close'].shift(1))
+    tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
+    atr = tr.rolling(period).mean()
+    return float(atr.iloc[-1])
+
+def calculate_cci(data: pd.DataFrame, period: int = 20) -> float:
+    """Calculate Commodity Channel Index"""
+    tp = (data['High'] + data['Low'] + data['Close']) / 3
+    sma_tp = tp.rolling(period).mean()
+    mad = tp.rolling(period).apply(lambda x: pd.Series(x).mad())
+    cci = (tp - sma_tp) / (0.015 * mad)
+    return float(cci.iloc[-1])
+
+def calculate_stochastic(data: pd.DataFrame, period: int = 14) -> float:
+    """Calculate Stochastic Oscillator"""
+    low_min = data['Low'].rolling(period).min()
+    high_max = data['High'].rolling(period).max()
+    k = 100 * (data['Close'] - low_min) / (high_max - low_min)
+    return float(k.iloc[-1])
+
+def calculate_williams_r(data: pd.DataFrame, period: int = 14) -> float:
+    """Calculate Williams %R"""
+    high = data['High'].rolling(period).max()
+    low = data['Low'].rolling(period).min()
+    wr = -100 * (high - data['Close']) / (high - low)
+    return float(wr.iloc[-1])
+
+def calculate_atr(data: pd.DataFrame, period: int = 14) -> float:
+    """Calculate Average True Range"""
+    high_low = data['High'] - data['Low']
+    high_close = abs(data['High'] - data['Close'].shift(1))
+    low_close = abs(data['Low'] - data['Close'].shift(1))
+    ranges = pd.concat([high_low, high_close, low_close], axis=1)
+    true_range = ranges.max(axis=1)
+    return float(true_range.rolling(period).mean().iloc[-1])
+
+def calculate_volatility_index(data: pd.DataFrame, period: int = 20) -> float:
+    """Calculate Volatility Index (simplified)"""
+    log_return = np.log(data['Close'] / data['Close'].shift(1))
+    return float(log_return.std() * np.sqrt(252) * 100)
+
+def calculate_advanced_indicators(data: pd.DataFrame) -> Dict[str, float]:
+    """Calculate additional technical indicators"""
+    return {
+        'volume_ema': calculate_volume_ema(data['Volume']),
+        'obv': calculate_on_balance_volume(data),
+        'money_flow_index': calculate_mfi(data),
+        'adx': calculate_adx(data),
+        'cci': calculate_cci(data),
+        'stochastic': calculate_stochastic(data),
+        'williams_r': calculate_williams_r(data),
+        'atr': calculate_atr(data),
+        'vix': calculate_volatility_index(data)
     }
 
 def calculate_technical_indicators(data: pd.DataFrame) -> pd.DataFrame:
