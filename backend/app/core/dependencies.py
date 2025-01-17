@@ -14,3 +14,8 @@ def get_analysis_service() -> AnalysisService:
 def get_ml_service() -> MLService:
     """Dependency for getting MLService instance"""
     return MLService()
+from app.services.stock_service import StockService
+
+def get_stock_service() -> StockService:
+    """Dependency to get StockService instance"""
+    return StockService()

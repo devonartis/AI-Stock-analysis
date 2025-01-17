@@ -119,3 +119,22 @@ class AnalysisResult(BaseModel):
 class StockSearchResponse(BaseModel):
     """Response model for stock search endpoint"""
     ticker: str = Field(..., description="Stock ticker symbol", example="AAPL")
+from pydantic import BaseModel
+
+class StockAnalysis(BaseModel):
+    """Basic stock information and analysis"""
+    ticker: str
+    company_name: str
+    current_price: float
+    change_percent: float
+    volume: int
+
+class AnalysisResult(BaseModel):
+    """Detailed technical analysis results"""
+    ticker: str
+    recommendation: str
+    indicators: dict
+
+class StockSearchResponse(BaseModel):
+    """Response model for stock search"""
+    ticker: str
