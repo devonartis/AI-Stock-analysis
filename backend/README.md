@@ -54,6 +54,24 @@ An AI-driven stock analysis platform that democratizes trading decisions by comb
    uvicorn app.main:app --reload
    ```
 
+## Running the Server
+
+To start the FastAPI server:
+
+1. Navigate to the app directory:
+```bash
+cd backend/app
+```
+
+2. Activate your virtual environment (if not already activated)
+
+3. Start the server with:
+```bash
+PYTHONPATH=$PYTHONPATH:.. uvicorn main:app --reload
+```
+
+The server will start on `http://127.0.0.1:8000`. The `--reload` flag enables auto-reload on code changes.
+
 ## Architecture
 
 The backend is built with:

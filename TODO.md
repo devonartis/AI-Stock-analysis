@@ -12,6 +12,14 @@
 - [x] Configure TypeScript and ESLint
 - [x] Set up Tailwind CSS with forms plugin
 
+### Frontend Features
+- [x] Implement stock search functionality
+- [x] Add stock data display card
+- [x] Fix price change calculations using historical data
+- [x] Implement volume and average volume display
+- [x] Add proper number formatting (M for millions, B for billions)
+- [x] Add color-coding for price changes
+
 ## ASAP Tasks
 - [ ] Convert Pydantic models to SQLAlchemy models for database persistence
 - [ ] Set up database migrations with Alembic
@@ -34,6 +42,12 @@
 - [ ] Implement rate limiting for API endpoints
 - [ ] Add caching layer for frequently accessed data
 - [ ] Enhance error handling and logging
+- [ ] Refactor Pydantic models to handle unstable Yahoo Finance API:
+  - [ ] Replace strict validation with flexible data handling
+  - [ ] Add fallback values for missing data
+  - [ ] Implement retry mechanism with exponential backoff
+  - [ ] Consider adding alternative data sources as fallback
+  - [ ] Add proper error handling for API changes
 
 ## Frontend Tasks
 
