@@ -30,6 +30,25 @@
 
 ## Backend Tasks
 
+### HIGH PRIORITY: API Endpoint Exposure
+- [ ] Expose existing service endpoints:
+  - [ ] News Service:
+    - [ ] Company news endpoint
+    - [ ] Sentiment analysis endpoint
+    - [ ] News summary endpoint
+  - [ ] ML Service:
+    - [ ] Technical pattern detection endpoint
+    - [ ] Price prediction endpoint
+    - [ ] Anomaly detection endpoint
+  - [ ] Analysis Service:
+    - [ ] Bollinger Bands endpoint
+    - [ ] MACD indicators endpoint
+    - [ ] Trading signals endpoint
+- [ ] Add comprehensive tests for each endpoint
+- [ ] Document all endpoints in OpenAPI/Swagger
+- [ ] Add rate limiting and caching
+- [ ] Implement proper error handling
+
 ### Database Integration
 - [ ] Convert existing Pydantic models to SQLAlchemy models
 - [ ] Set up database migrations using Alembic
