@@ -1,6 +1,6 @@
 # Stock Analysis Application
 
-A comprehensive stock analysis platform with a FastAPI backend and Next.js frontend.
+A comprehensive, AI-driven stock analysis platform that provides actionable trading recommendations with clear, conversational explanations. The system leverages machine learning for predictions and large language models (LLMs) for natural language interactions, making complex trading decisions more accessible to both novice and experienced traders.
 
 ## Project Structure
 
@@ -76,6 +76,20 @@ This project uses Turborepo for managing the monorepo structure:
 - `npm run format` - Format code using Prettier
 
 ## Features
+
+### AI Features
+
+- **AI-Powered Trading Recommendations**
+  - ML-based stock movement predictions
+  - Probability scores for Buy/Sell/Hold decisions
+  - SHAP-based feature importance analysis
+  - Clear explanations for trading decisions
+
+- **Natural Language Interface**
+  - Conversational AI for technical analysis
+  - Interactive Q&A about market conditions
+  - Educational content and strategy explanations
+  - Follow-up questions and clarifications
 
 ### Backend
 - Real-time stock data analysis
