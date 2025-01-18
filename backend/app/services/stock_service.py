@@ -8,6 +8,7 @@ import requests
 from tenacity import retry, stop_after_attempt, wait_exponential
 import time
 from aiohttp import ClientSession
+from pydantic import ValidationError
 
 from ..schemas.service import StockServiceInput
 from ..utils.output import OutputManager
@@ -193,16 +194,25 @@ class StockService:
             AnalysisError: If there is an error during analysis
             ValidationError: If data fails model validation
         """
-        # Validate inputs using Pydantic
-        input_data = StockServiceInput(
-            company_input=company_input,
-            days=days
-        )
         # Validate input parameters
         if not isinstance(company_input, str) or not company_input.strip():
             raise ValueError("Company input must be a non-empty string")
         if not isinstance(days, int) or days <= 0:
             raise ValueError("Days must be a positive integer")
+
+        try:
+            # Validate inputs using Pydantic
+            input_data = StockServiceInput(
+                company_input=company_input,
+                days=days
+            )
+        except ValidationError as e:
+            # Convert Pydantic validation errors to our custom errors
+            if "days" in str(e):
+                raise ValueError("Days must be a positive integer")
+            if "company_input" in str(e):
+                raise ValueError("Company input must be a non-empty string")
+            raise ValidationError(str(e))
 
         start_time = time.time()
         
@@ -211,8 +221,8 @@ class StockService:
             # Get ticker symbol
             ticker = company_input if company_input.isupper() and len(company_input) <= 5 else await self.search_company(company_input)
             if not ticker:
-                raise ValueError(f"Could not find ticker symbol for {company_input}")
-            
+                raise StockDataError(f"Could not find ticker symbol for {company_input}")
+
             # Get stock data
             try:
                 stock_data = self.get_stock_data(ticker, days)
@@ -283,6 +293,9 @@ class StockService:
                 execution_time=time.time() - start_time
             )
             
+        except (ValueError, StockDataError) as e:
+            # Propagate validation and data errors directly
+            raise
         except Exception as e:
             logger.error(f"Error analyzing stock: {str(e)}", exc_info=True)
             raise AnalysisError(f"Failed to analyze stock: {str(e)}")
