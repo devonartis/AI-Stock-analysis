@@ -1,5 +1,13 @@
 # TODO List
 
+## ASAP Tasks
+- [ ] Convert Pydantic models to SQLAlchemy models for database persistence
+- [ ] Set up database migrations with Alembic
+- [ ] Implement basic frontend dashboard with stock data display
+- [ ] Add authentication system for user management
+- [ ] Set up proper error handling and logging
+- [ ] Add initial API documentation using OpenAPI/Swagger
+
 ## Backend Tasks
 
 ### Database Integration
