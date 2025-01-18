@@ -80,7 +80,8 @@ def calculate_cci(data: pd.DataFrame, period: int = 20) -> float:
     """Calculate Commodity Channel Index"""
     tp = (data['High'] + data['Low'] + data['Close']) / 3
     sma_tp = tp.rolling(period).mean()
-    mad = tp.rolling(period).apply(lambda x: pd.Series(x).mad())
+    # Use abs().mean() instead of mad() since mad() is not available in newer pandas versions
+    mad = tp.rolling(period).apply(lambda x: abs(x - x.mean()).mean())
     cci = (tp - sma_tp) / (0.015 * mad)
     return float(cci.iloc[-1])
 

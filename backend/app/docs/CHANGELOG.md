@@ -67,6 +67,19 @@ All notable changes to the Stock Analysis API will be documented in this file.
 - Add integration tests
 - Set up CI/CD pipeline
 
+## [2025-01-17]
+
+### Fixed
+- Fixed import issues in backend/__init__.py by switching to absolute imports
+- Updated CCI (Commodity Channel Index) calculation to use modern pandas methods
+- Fixed test failures in technical indicators module
+- Improved code organization and maintainability
+
+### Technical
+- Replaced deprecated pandas `mad()` function with manual mean absolute deviation calculation
+- All technical indicator tests now passing successfully
+- Noted Pydantic V2 deprecation warnings for future updates
+
 ## [0.1.1] - 2024-01-17
 ### Added
 - Initial FastAPI implementation
