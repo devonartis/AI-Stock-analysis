@@ -72,6 +72,35 @@ export interface StockData {
   fiftyTwoWeekLow?: number;
   volume?: number;
   avgVolume?: number;
+  technical_indicators: {
+    rsi: number;
+    macd: number;
+    sma_20: number;
+    sma_50: number;
+    sma_200: number;
+    bollinger_bands: {
+      upper: number;
+      middle: number;
+      lower: number;
+      bandwidth: number;
+      percent_b: number;
+    };
+  };
+  price_statistics: {
+    mean: number;
+    std: number;
+    min: number;
+    max: number;
+    median: number;
+  };
+  historical_prices: Array<{
+    date: string;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    volume: number;
+  }>;
 }
 
 export async function getStockInfo(symbol: string): Promise<StockData> {
@@ -97,6 +126,11 @@ export async function getStockInfo(symbol: string): Promise<StockData> {
     }
     
     const data: BackendResponse = await response.json();
+    
+    // Debug logs
+    console.log('Raw API response:', data);
+    console.log('Technical indicators from API:', data.analysis.technical_indicators);
+    
     logger.debug('Received stock data', { symbol, data });
     
     // Calculate daily change and percent from historical prices
@@ -109,8 +143,7 @@ export async function getStockInfo(symbol: string): Promise<StockData> {
     // Calculate average volume from historical prices
     const avgVolume = prices.reduce((sum, price) => sum + price.volume, 0) / prices.length;
     
-    // Map the nested structure to our frontend model
-    return {
+    const stockData = {
       symbol: data.analysis.ticker,
       name: data.analysis.company_name,
       price: data.analysis.current_price,
@@ -122,8 +155,16 @@ export async function getStockInfo(symbol: string): Promise<StockData> {
       fiftyTwoWeekHigh: data.analysis.company_info.fifty_two_week_high,
       fiftyTwoWeekLow: data.analysis.company_info.fifty_two_week_low,
       volume: data.analysis.volume,
-      avgVolume: avgVolume
+      avgVolume: avgVolume,
+      technical_indicators: data.analysis.technical_indicators,
+      price_statistics: data.analysis.price_statistics,
+      historical_prices: data.analysis.historical_prices
     };
+
+    // Debug log transformed data
+    console.log('Transformed stock data:', stockData);
+    
+    return stockData;
   } catch (error) {
     logger.error('Error in getStockInfo', { 
       symbol, 

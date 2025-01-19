@@ -3,6 +3,9 @@
 import { useState } from 'react'
 import { StockSearch } from "@/components/stocks/StockSearch"
 import { StockCard } from "@/components/stocks/StockCard"
+import { TechnicalIndicators } from "@/components/stocks/TechnicalIndicators"
+import { PriceStatistics } from "@/components/stocks/PriceStatistics"
+import { PriceChart } from "@/components/stocks/PriceChart"
 import { getStockInfo, type StockData } from "@/services/api"
 import { logger } from '@/utils/logger'
 
@@ -39,7 +42,7 @@ export default function Home() {
         <h1 className="text-4xl font-bold">Stock Analysis</h1>
       </header>
       
-      <main className="flex w-full max-w-4xl flex-col items-center gap-8">
+      <main className="flex w-full max-w-6xl flex-col items-center gap-8">
         <section className="w-full">
           <StockSearch onSearch={handleSearch} />
         </section>
@@ -54,7 +57,20 @@ export default function Home() {
               {error}
             </div>
           ) : stockData ? (
-            <StockCard {...stockData} />
+            <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <StockCard {...stockData} />
+                {stockData.technical_indicators && (
+                  <TechnicalIndicators indicators={stockData.technical_indicators} />
+                )}
+              </div>
+              {stockData.historical_prices && (
+                <PriceChart data={stockData.historical_prices} />
+              )}
+              {stockData.price_statistics && (
+                <PriceStatistics statistics={stockData.price_statistics} />
+              )}
+            </div>
           ) : (
             <div className="rounded-lg border p-4">
               <p className="text-muted-foreground">Enter a stock symbol above to see details</p>
