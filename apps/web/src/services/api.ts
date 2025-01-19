@@ -93,6 +93,14 @@ export interface StockData {
     max: number;
     median: number;
   };
+  historical_prices: Array<{
+    date: string;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    volume: number;
+  }>;
 }
 
 export async function getStockInfo(symbol: string): Promise<StockData> {
@@ -149,7 +157,8 @@ export async function getStockInfo(symbol: string): Promise<StockData> {
       volume: data.analysis.volume,
       avgVolume: avgVolume,
       technical_indicators: data.analysis.technical_indicators,
-      price_statistics: data.analysis.price_statistics
+      price_statistics: data.analysis.price_statistics,
+      historical_prices: data.analysis.historical_prices
     };
 
     // Debug log transformed data

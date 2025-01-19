@@ -5,6 +5,7 @@ import { StockSearch } from "@/components/stocks/StockSearch"
 import { StockCard } from "@/components/stocks/StockCard"
 import { TechnicalIndicators } from "@/components/stocks/TechnicalIndicators"
 import { PriceStatistics } from "@/components/stocks/PriceStatistics"
+import { PriceChart } from "@/components/stocks/PriceChart"
 import { getStockInfo, type StockData } from "@/services/api"
 import { logger } from '@/utils/logger'
 
@@ -63,6 +64,9 @@ export default function Home() {
                   <TechnicalIndicators indicators={stockData.technical_indicators} />
                 )}
               </div>
+              {stockData.historical_prices && (
+                <PriceChart data={stockData.historical_prices} />
+              )}
               {stockData.price_statistics && (
                 <PriceStatistics statistics={stockData.price_statistics} />
               )}
